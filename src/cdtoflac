@@ -1,0 +1,188 @@
+#!/bin/sh
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
+
+set -eu
+
+###################
+# Defaults
+###################
+
+# Whether to eject the CDROM when done
+readonly D_EJECT=0
+
+# Path to the CDROM device
+readonly D_DEVICE="/dev/cdrom"
+
+# Path to the output directory
+readonly D_OUTPUT="."
+
+# Whether to keep the original WAV files
+readonly D_KEEP=0
+
+# Maximum number of parallel encodes
+readonly D_PARALLEL=5
+
+###################
+# Function Definitions
+###################
+
+# dependencies()
+# Prints a newline-separated list of command dependencies of this script.
+dependencies() {
+  cat <<EOF
+cdparanoia
+flac
+EOF
+}
+
+# me()
+# Prints the basename of this script.
+me() {
+  basename "$0"
+}
+
+# usage()
+# Prints the command usage to stdout.
+usage() {
+  cat <<EOF
+$(version): CD ripping frontend for cdparanoia.
+
+Music CD digitization tool based on cdparanoia.
+Rips all the tracks from a CDROM and encodes them as lossless FLACs.
+
+Usage: $(me) [OPTIONS]
+
+    -e, --eject          Eject the CDROM when finished.
+    -d, --device DEVICE  Use DEVICE as the CDROM. Default: ${D_DEVICE}
+    -h, --help           Show help and quit.
+    -k, --keep           Keep WAV files after encoding to FLAC.
+    -o, --output DIR     Output the tracks to DIR. Defaults to the current working directory.
+    -P, --parallel NUM   Do up to NUM parallel FLAC encodes. Default: ${D_PARALLEL}
+    -V, --version        Show version and quit.
+
+EOF
+}
+
+# version()
+# Prints the current program version to stdout.
+version() {
+  echo "$(basename "$0") v0.1.0"
+}
+
+###################
+# Functions
+###################
+
+# is_int(NUM)
+# Returns true if NUM is an integer
+is_int ()
+{
+    [ "$1" -eq "$1" ] 2> /dev/null
+}
+
+###################
+# Main
+###################
+
+# Convert long arguments into short forms
+for arg in "$@"; do
+  case "$arg" in
+  --eject) set -- "$@" "-e" ;;
+  --device) set -- "$@" "-d" ;;
+  --help) set -- "$@" "-h" ;;
+  --output) set -- "$@" "-o" ;;
+  --keep) set -- "$@" "-k" ;;
+  --parallel) set -- "$@" "-P" ;;
+  --version) set -- "$@" "-V" ;;
+  *) set -- "$@" "$arg" ;;
+  esac
+
+  shift
+done
+
+# Process short arguments
+while getopts ":ed:ho:kP:V" opt; do
+  case $opt in
+  e) eject=1 ;;
+  d) device="$OPTARG" ;;
+  h)
+    usage
+    exit 0
+    ;;
+  o) output="$OPTARG" ;;
+  k) keep=1 ;;
+  P) parallel="$OPTARG" ;;
+  V)
+    version
+    exit 0
+    ;;
+  *)
+    # Invalid option
+    echo >&2 "$(me): Invalid option $opt"
+    exit 1
+    ;;
+  esac
+done
+
+# Shift arguments that were already handled by getopts
+shift $((OPTIND - 1))
+
+# Fallback to defaults for unset arguments
+if [ -z ${eject+x} ]; then eject=$D_EJECT; fi
+if [ -z ${device+x} ]; then device=$D_DEVICE; fi
+if [ -z ${output+x} ]; then output=$D_OUTPUT; fi
+if [ -z ${keep+x} ]; then keep=$D_KEEP; fi
+if [ -z ${parallel+x} ]; then parallel=$D_PARALLEL; fi
+
+# Ensure dependencies are found
+dependencies | while IFS= read -r dependency; do
+  if ! command -v "$dependency" >/dev/null 2>&1; then
+    echo >&2 "$(me): Dependency $dependency not found in \$PATH"
+    exit 2
+  fi
+done
+
+# Validate program arguments
+if ! is_int "$parallel"; then
+  echo >&2 "$(me): Argument of -p or --parallel option must be an integer. $parallel given"
+  exit 1
+fi
+
+# Ensure script is run as root
+if [ "$(id -u)" -ne 0 ]; then
+  echo >&2 "$(me): Must be run as root"
+  exit 1
+fi
+
+# Change to output directory
+mkdir -p "$output"
+cd "$output"
+
+# Rip CD using cdparanoia
+cdparanoia -d "$device" -XB
+
+# Start encoding in parallel processes
+find . -name "*.wav" -print0 | xargs -0 -P $parallel flac
+
+# Remove source WAV files
+if [ $keep -eq 0 ]; then
+  rm ./*.wav
+fi
+
+# Eject CD
+if [ $eject -eq 1 ]; then
+  eject "$device"
+fi
