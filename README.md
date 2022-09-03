@@ -13,6 +13,43 @@
 
 *cdtoflac provides a POSIX shell script frontend to cdparanoia for losslessly ripping and encoding music CDs as FLACs.*
 
+*cdtoflac* is a small wrapper utility around `cdparanoia` and `flac` for digitizing your CD collection. It handles:
+
+- Detection and accurate extraction of all the tracks on a CD.
+- Encoding the extracted WAV files as FLACs.
+- Managing the owner and group of the outputted track files.
+
+Interested? [Here's how to get started.](#getting-started)
+
+## Getting started
+
+### Installation
+
+*cdtoflac* depends on both the `cdparanoia` and `flac` CLI programs to be installed and available in the `$PATH`.
+
+Otherwise, installing *cdtoflac* is as simple as obtaining a copy of the script and ensuring it is executable:
+
+    # git clone https://github.com/ahgencer/cdtoflac.git
+    # cd cdtoflac/src/
+    # chmod +x cdtoflac
+
+### Usage
+
+To rip a CD, place it into a compatible CD-ROM drive and run:
+
+    $ cdtoflac -d <DEVICE> -o <OUTPUT>
+
+where `DEVICE` is the device path to the CD-ROM drive and `OUTPUT` is the directory to output the tracks as FLACs.
+
+> **Note:** This script must be run with root privileges. Therefore, the resulting files will (by default) be owned by
+> the `root` user.
+
+You can view all the available commands and options by running:
+
+    # cdtoflac --help
+
+It might also be worth reading through [cdparanoia(1)](https://manpages.org/cdparanoia).
+
 ## License
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU Lesser General Public
