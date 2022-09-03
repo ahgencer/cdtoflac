@@ -58,20 +58,21 @@ me() {
 # Prints the command usage to stdout.
 usage() {
   cat <<EOF
-$(version): CD ripping frontend for cdparanoia.
+$(version): Music CD digitization tool based on cdparanoia.
 
-Music CD digitization tool based on cdparanoia.
-Rips all the tracks from a CD and encodes them as lossless FLACs.
+Rips all the tracks from a CD and losslessly encodes them as FLACs.
+
+Note: This script must be run with root privileges.
 
 Usage: $(me) [OPTIONS]
 
     -C, --chown  USER[:GROUP]  Change the owner and group of the output files after the encoding is finished.
     -e, --eject                Eject the CD when finished.
-    -d, --device DEVICE        Use DEVICE as the CD-ROM drive. Default: ${D_DEVICE}
+    -d, --device DEVICE        Use DEVICE as the CD-ROM drive. Default: ${D_DEVICE}.
     -h, --help                 Show help and quit.
     -k, --keep                 Keep WAV files after encoding to FLAC.
     -o, --output DIR           Output the tracks to DIR. Defaults to the current working directory.
-    -P, --parallel NUM         Do up to NUM parallel FLAC encodes. Default: ${D_PARALLEL}
+    -P, --parallel NUM         Do up to NUM parallel FLAC encodes. Default: ${D_PARALLEL}.
     -V, --version              Show version and quit.
 
 EOF
@@ -80,7 +81,7 @@ EOF
 # version()
 # Prints the current program version to stdout.
 version() {
-  echo "$(me) v0.2.0-dev"
+  echo "$(me) v0.2.1"
 }
 
 ###################

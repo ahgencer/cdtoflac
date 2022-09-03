@@ -27,28 +27,22 @@ Interested? [Here's how to get started.](#getting-started)
 
 *cdtoflac* depends on both the `cdparanoia` and `flac` CLI programs to be installed and available in the `$PATH`.
 
-Otherwise, installing *cdtoflac* is as simple as obtaining a copy of the script and ensuring it is executable:
-
-    # git clone https://github.com/ahgencer/cdtoflac.git
-    # cd cdtoflac/src/
-    # chmod +x cdtoflac
+Otherwise, you can run *cdtoflac* directly after downloading a copy of it.
 
 ### Usage
+
+To get help on using *cdtoflac*, run:
+
+    # cdtoflac --help
+
+Additionally, it might be worth reading through [cdparanoia(1)](https://manpages.org/cdparanoia)
+and [flac(1)](https://manpages.org/flac).
 
 To rip a CD, place it into a compatible CD-ROM drive and run:
 
     $ cdtoflac -d <DEVICE> -o <OUTPUT>
 
-where `DEVICE` is the device path to the CD-ROM drive and `OUTPUT` is the directory to output the tracks as FLACs.
-
-> **Note:** This script must be run with root privileges. Therefore, the resulting files will (by default) be owned by
-> the `root` user.
-
-You can view all the available commands and options by running:
-
-    # cdtoflac --help
-
-It might also be worth reading through [cdparanoia(1)](https://manpages.org/cdparanoia).
+where `DEVICE` is the device path to the CD-ROM drive and `OUTPUT` is the directory to output the extracted tracks.
 
 ## License
 
