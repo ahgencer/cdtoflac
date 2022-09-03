@@ -20,17 +20,17 @@ set -eu
 # Defaults
 ###################
 
-# Whether to eject the CD when done
-readonly D_EJECT=0
-
 # Device path to the CD-ROM drive
 readonly D_DEVICE="/dev/cdrom"
 
-# Path to the output directory
-readonly D_OUTPUT="."
+# Whether to eject the CD when done
+readonly D_EJECT=0
 
 # Whether to keep the original WAV files
 readonly D_KEEP=0
+
+# Path to the output directory
+readonly D_OUTPUT="."
 
 # Maximum number of parallel encodes
 readonly D_PARALLEL=5
@@ -177,7 +177,7 @@ fi
 cd "$output"
 
 # Rip CD using cdparanoia
-cdparanoia -d "$device" -XB
+cdparanoia -XB -d "$device"
 
 # Start encoding in parallel processes
 find . -name "*.wav" -print0 | xargs -0 -P $parallel flac
