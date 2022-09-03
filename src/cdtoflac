@@ -20,10 +20,10 @@ set -eu
 # Defaults
 ###################
 
-# Whether to eject the CDROM when done
+# Whether to eject the CD when done
 readonly D_EJECT=0
 
-# Path to the CDROM device
+# Device path to the CD-ROM drive
 readonly D_DEVICE="/dev/cdrom"
 
 # Path to the output directory
@@ -61,13 +61,13 @@ usage() {
 $(version): CD ripping frontend for cdparanoia.
 
 Music CD digitization tool based on cdparanoia.
-Rips all the tracks from a CDROM and encodes them as lossless FLACs.
+Rips all the tracks from a CD and encodes them as lossless FLACs.
 
 Usage: $(me) [OPTIONS]
 
     -C, --chown  USER[:GROUP]  Change the owner and group of the output files after the encoding is finished.
-    -e, --eject                Eject the CDROM when finished.
-    -d, --device DEVICE        Use DEVICE as the CDROM. Default: ${D_DEVICE}
+    -e, --eject                Eject the CD when finished.
+    -d, --device DEVICE        Use DEVICE as the CD-ROM drive. Default: ${D_DEVICE}
     -h, --help                 Show help and quit.
     -k, --keep                 Keep WAV files after encoding to FLAC.
     -o, --output DIR           Output the tracks to DIR. Defaults to the current working directory.
