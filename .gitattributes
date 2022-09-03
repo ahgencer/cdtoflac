@@ -1,0 +1,6 @@
+# Git
+.gitattributes  export-ignore
+.gitignore  export-ignore
+
+# Project
+.editorconfig  export-ignore
