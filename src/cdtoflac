@@ -65,13 +65,14 @@ Rips all the tracks from a CDROM and encodes them as lossless FLACs.
 
 Usage: $(me) [OPTIONS]
 
-    -e, --eject          Eject the CDROM when finished.
-    -d, --device DEVICE  Use DEVICE as the CDROM. Default: ${D_DEVICE}
-    -h, --help           Show help and quit.
-    -k, --keep           Keep WAV files after encoding to FLAC.
-    -o, --output DIR     Output the tracks to DIR. Defaults to the current working directory.
-    -P, --parallel NUM   Do up to NUM parallel FLAC encodes. Default: ${D_PARALLEL}
-    -V, --version        Show version and quit.
+    -C, --chown  USER[:GROUP]  Change the owner and group of the output files after the encoding is finished.
+    -e, --eject                Eject the CDROM when finished.
+    -d, --device DEVICE        Use DEVICE as the CDROM. Default: ${D_DEVICE}
+    -h, --help                 Show help and quit.
+    -k, --keep                 Keep WAV files after encoding to FLAC.
+    -o, --output DIR           Output the tracks to DIR. Defaults to the current working directory.
+    -P, --parallel NUM         Do up to NUM parallel FLAC encodes. Default: ${D_PARALLEL}
+    -V, --version              Show version and quit.
 
 EOF
 }
@@ -79,7 +80,7 @@ EOF
 # version()
 # Prints the current program version to stdout.
 version() {
-  echo "$(basename "$0") v0.1.0"
+  echo "$(me) v0.2.0-dev"
 }
 
 ###################
@@ -88,9 +89,8 @@ version() {
 
 # is_int(NUM)
 # Returns true if NUM is an integer
-is_int ()
-{
-    [ "$1" -eq "$1" ] 2> /dev/null
+is_int() {
+  [ "$1" -eq "$1" ] 2>/dev/null
 }
 
 ###################
@@ -100,6 +100,7 @@ is_int ()
 # Convert long arguments into short forms
 for arg in "$@"; do
   case "$arg" in
+  --chown) set -- "$@" "-C" ;;
   --eject) set -- "$@" "-e" ;;
   --device) set -- "$@" "-d" ;;
   --help) set -- "$@" "-h" ;;
@@ -114,8 +115,9 @@ for arg in "$@"; do
 done
 
 # Process short arguments
-while getopts ":ed:ho:kP:V" opt; do
+while getopts ":C:ed:ho:kP:V" opt; do
   case $opt in
+  C) chown="$OPTARG" ;;
   e) eject=1 ;;
   d) device="$OPTARG" ;;
   h)
@@ -168,7 +170,10 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 # Change to output directory
-mkdir -p "$output"
+if [ ! -d "$output" ]; then
+  mkdir -p "$output"
+  if [ ! -z "${chown+x}" ]; then chown "$chown" "$output"; fi
+fi
 cd "$output"
 
 # Rip CD using cdparanoia
@@ -176,6 +181,11 @@ cdparanoia -d "$device" -XB
 
 # Start encoding in parallel processes
 find . -name "*.wav" -print0 | xargs -0 -P $parallel flac
+
+# Change the file owners and groups
+if [ ! -z "${chown+x}" ]; then
+  chown "$chown" ./*.wav ./*.flac
+fi
 
 # Remove source WAV files
 if [ $keep -eq 0 ]; then
