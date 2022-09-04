@@ -185,6 +185,12 @@ cd "$output"
 # Rip CD using cdparanoia
 cdparanoia -XB -d "$device" || die $((100 + $?)) "Error while ripping CD with cdparanoia"
 
+# Done reading, eject CD
+# The encoding will probably be finished by the time the user puts the next CD in
+if [ $eject -eq 1 ]; then
+  eject "$device"
+fi
+
 # Start encoding in parallel processes
 find . -name "*.wav" -print0 | xargs -0 -P $parallel flac || die $((100 + $?)) "Error while encoding tracks with flac"
 
@@ -196,9 +202,4 @@ fi
 # Remove source WAV files
 if [ $keep -eq 0 ]; then
   rm ./*.wav
-fi
-
-# Eject CD
-if [ $eject -eq 1 ]; then
-  eject "$device"
 fi
