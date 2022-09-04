@@ -14,8 +14,6 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-set -eu
-
 ###################
 # Defaults
 ###################
@@ -29,6 +27,23 @@ readonly D_PARALLEL=5          # Maximum number of parallel encodes
 ###################
 # Functions
 ###################
+
+# die(STATUS, MESSAGE)
+# Prints MESSAGE to stderr and exits with the error code STATUS.
+die() {
+  # Validate function arguments
+  if [ $# -ne 2 ]; then
+    die 200 "Invalid number of arguments to die()"
+  fi
+
+  if ! is_int "$1"; then
+    die 200 "First argument of die() must be an integer. '$1' given"
+  fi
+
+  # Print message and exit
+  echo >&2 "$(me): $2"
+  exit "$1"
+}
 
 # is_int(NUM)
 # Returns true if NUM is an integer
@@ -69,7 +84,7 @@ EOF
 # version()
 # Prints the current program version to stdout.
 version() {
-  echo "$(me) v0.3.0-dev"
+  echo "$(me) v0.3.0"
 }
 
 ###################
@@ -111,9 +126,7 @@ while getopts ":C:ed:ho:kP:V" opt; do
     exit 0
     ;;
   *)
-    # Invalid option
-    echo >&2 "$(me): Invalid option $opt"
-    exit 1
+    die 1 "Invalid option"
     ;;
   esac
 done
@@ -130,10 +143,7 @@ if [ -z ${parallel+x} ]; then parallel=$D_PARALLEL; fi
 
 # Ensure dependencies are found
 while IFS= read -r dependency; do
-  if ! command -v "$dependency" >/dev/null 2>&1; then
-    echo >&2 "$(me): Dependency $dependency not found in \$PATH"
-    exit 2
-  fi
+  command -v "$dependency" >/dev/null 2>&1 || die 2 "Dependency '$dependency' not found in \$PATH"
 done <<EOF
 cdparanoia
 flac
@@ -141,35 +151,33 @@ EOF
 
 # Validate program arguments
 if ! is_int "$parallel"; then
-  echo >&2 "$(me): Argument of -p or --parallel option must be an integer. $parallel given"
-  exit 1
+  die 1 "Argument of -p or --parallel option must be an integer. '$parallel' given"
 fi
 
 # Ensure script is run as root
 if [ "$(id -u)" -ne 0 ]; then
-  echo >&2 "$(me): Must be run as root"
-  exit 1
+  die 1 "Must be run as root"
 fi
 
 # Change to output directory
 if [ ! -d "$output" ]; then
   mkdir -p "$output"
 
-  if [ ! -z "${chown+x}" ]; then
+  if [ -n "$chown" ]; then
     chown "$chown" "$output"
   fi
 fi
 
-cd "$output"
+cd "$output" || die 200 "Could not change into output directory '$output'"
 
 # Rip CD using cdparanoia
-cdparanoia -XB -d "$device"
+cdparanoia -XB -d "$device" || die $((100 + $?)) "Error while ripping CD with cdparanoia"
 
 # Start encoding in parallel processes
-find . -name "*.wav" -print0 | xargs -0 -P $parallel flac
+find . -name "*.wav" -print0 | xargs -0 -P $parallel flac || die $((100 + $?)) "Error while encoding tracks with flac"
 
 # Change the file owners and groups
-if [ ! -z "${chown+x}" ]; then
+if [ -n "$chown" ]; then
   chown "$chown" ./*.wav ./*.flac
 fi
 

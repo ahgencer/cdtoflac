@@ -1,4 +1,4 @@
-.TH CDTOFLAC 1 "September 2022" "cdtoflac v0.2.1" "User Commands"
+.TH CDTOFLAC 1 "September 2022" "cdtoflac v0.3.0" "User Commands"
 .SH NAME
 cdtoflac \- Music CD digitization tool based on cdparanoia.
 .SH SYNOPSIS
@@ -39,10 +39,18 @@ Show version and quit.
 Success.
 .TP
 \fB1\fR
-Invalid argument.
+Invalid invocation. Either an invalid or unrecognized argument was passed, or
+the script was otherwise used incorrectly.
 .TP
 \fB\2\fR
 Missing dependency.
+.TP
+\fB\1xx\fR
+Internal error. Usually, this indicates that cdparanoia was not able to rip the
+CD successfully. 'xx' indicates the internal error code.
+.TP
+\fB\200\fR
+A bug occurred within the script.
 .SH AUTHOR
 Written by Alpin H. Gencer <ah@gencer.us>.
 .SH COPYRIGHT
