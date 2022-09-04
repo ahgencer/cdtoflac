@@ -20,23 +20,14 @@ set -eu
 # Defaults
 ###################
 
-# Device path to the CD-ROM drive
-readonly D_DEVICE="/dev/cdrom"
-
-# Whether to eject the CD when done
-readonly D_EJECT=0
-
-# Whether to keep the original WAV files
-readonly D_KEEP=0
-
-# Path to the output directory
-readonly D_OUTPUT="."
-
-# Maximum number of parallel encodes
-readonly D_PARALLEL=5
+readonly D_DEVICE="/dev/cdrom" # Device path to the CD-ROM drive
+readonly D_EJECT=0             # Whether to eject the CD when done
+readonly D_KEEP=0              # Whether to keep the original WAV files
+readonly D_OUTPUT="."          # Path to the output directory
+readonly D_PARALLEL=5          # Maximum number of parallel encodes
 
 ###################
-# Function Definitions
+# Functions
 ###################
 
 # dependencies()
@@ -46,6 +37,11 @@ dependencies() {
 cdparanoia
 flac
 EOF
+
+# is_int(NUM)
+# Returns true if NUM is an integer
+is_int() {
+  [ "$1" -eq "$1" ] 2>/dev/null
 }
 
 # me()
@@ -81,17 +77,7 @@ EOF
 # version()
 # Prints the current program version to stdout.
 version() {
-  echo "$(me) v0.2.1"
-}
-
-###################
-# Functions
-###################
-
-# is_int(NUM)
-# Returns true if NUM is an integer
-is_int() {
-  [ "$1" -eq "$1" ] 2>/dev/null
+  echo "$(me) v0.3.0-dev"
 }
 
 ###################
@@ -173,8 +159,12 @@ fi
 # Change to output directory
 if [ ! -d "$output" ]; then
   mkdir -p "$output"
-  if [ ! -z "${chown+x}" ]; then chown "$chown" "$output"; fi
+
+  if [ ! -z "${chown+x}" ]; then
+    chown "$chown" "$output"
+  fi
 fi
+
 cd "$output"
 
 # Rip CD using cdparanoia
