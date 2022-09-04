@@ -1,0 +1,64 @@
+.TH CDTOFLAC 1 "September 2022" "cdtoflac v0.2.1" "User Commands"
+.SH NAME
+cdtoflac \- Music CD digitization tool based on cdparanoia.
+.SH SYNOPSIS
+.B cdtoflac
+[\fI\,OPTIONS\/\fR]
+.SH DESCRIPTION
+Rips all the tracks from a CD and losslessly encodes them as FLACs.
+.PP
+\fBNote:\fR This script must be run with root privileges.
+.SH OPTIONS
+.TP
+\fB\-C\fR, \fB\-\-chown\fR \fI\,USER[:GROUP]\/\fR
+Change the owner and group of the output files after the encoding is finished.
+.TP
+\fB\-e\fR, \fB\-\-eject\fR
+Eject the CD when finished.
+.TP
+\fB\-d\fR, \fB\-\-device\fR \fI\,DEVICE\/\fR
+Use \fI\,DEVICE\/\fR as the CD\-ROM drive. Default: \fI\,/dev/cdrom\/\fP.
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Show help and quit.
+.TP
+\fB\-k\fR, \fB\-\-keep\fR
+Keep WAV files after encoding to FLAC.
+.TP
+\fB\-o\fR, \fB\-\-output\fR \fI\,DIR\/\fR
+Output the tracks to \fI\,DIR\/\fR. Defaults to the current working directory.
+.TP
+\fB\-P\fR, \fB\-\-parallel\fR \fI\,NUM\/\fR
+Do up to \fI\,NUM\/\fR parallel FLAC encodes. Default: \fI\,5\/\fR.
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Show version and quit.
+.SH "EXIT STATUSES"
+.TP
+\fB0\fR
+Success.
+.TP
+\fB1\fR
+Invalid argument.
+.TP
+\fB\2\fR
+Missing dependency.
+.SH AUTHOR
+Written by Alpin H. Gencer <ah@gencer.us>.
+.SH COPYRIGHT
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+.SH "SEE ALSO"
+cdparanoia(1), flac(1)
+.PP
+You can download a full copy of the source code at <https://github.com/ahgencer/cdtoflac>.

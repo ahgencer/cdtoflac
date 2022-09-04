@@ -35,8 +35,8 @@ To get help on using *cdtoflac*, run:
 
     # cdtoflac --help
 
-Additionally, it might be worth reading through [cdparanoia(1)](https://manpages.org/cdparanoia)
-and [flac(1)](https://manpages.org/flac).
+You may also refer to the manpage [cdtoflac(1)](docs/cdtoflac.1). Additionally, it might be worth reading
+through [cdparanoia(1)](https://manpages.org/cdparanoia) and [flac(1)](https://manpages.org/flac).
 
 To rip a CD, place it into a compatible CD-ROM drive and run:
 
