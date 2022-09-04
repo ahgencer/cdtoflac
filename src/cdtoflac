@@ -14,6 +14,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+set -e
+
 ###################
 # Defaults
 ###################
@@ -27,6 +29,15 @@ readonly D_PARALLEL=5          # Maximum number of parallel encodes
 ###################
 # Functions
 ###################
+
+# dependencies()
+# Prints a newline-separated list of command dependencies of this script.
+dependencies() {
+  cat <<EOF
+cdparanoia
+flac
+EOF
+}
 
 # die(STATUS, MESSAGE)
 # Prints MESSAGE to stderr and exits with the error code STATUS.
@@ -84,7 +95,7 @@ EOF
 # version()
 # Prints the current program version to stdout.
 version() {
-  echo "$(me) v0.3.0"
+  echo "$(me) v0.3.1-dev"
 }
 
 ###################
@@ -142,12 +153,9 @@ if [ -z ${keep+x} ]; then keep=$D_KEEP; fi
 if [ -z ${parallel+x} ]; then parallel=$D_PARALLEL; fi
 
 # Ensure dependencies are found
-while IFS= read -r dependency; do
+dependencies | while IFS= read -r dependency; do
   command -v "$dependency" >/dev/null 2>&1 || die 2 "Dependency '$dependency' not found in \$PATH"
-done <<EOF
-cdparanoia
-flac
-EOF
+done
 
 # Validate program arguments
 if ! is_int "$parallel"; then
@@ -168,7 +176,7 @@ if [ ! -d "$output" ]; then
   fi
 fi
 
-cd "$output" || die 200 "Could not change into output directory '$output'"
+cd "$output"
 
 # Rip CD using cdparanoia
 cdparanoia -XB -d "$device" || die $((100 + $?)) "Error while ripping CD with cdparanoia"
