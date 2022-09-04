@@ -51,6 +51,11 @@ CD successfully. 'xx' indicates the internal error code.
 .TP
 \fB\200\fR
 A bug occurred within the script.
+.SH "KNOWN BUGS"
+When using the \fB-C\fR or \fB--chown\fR option alongside the \fB-o\fR or
+\fB--output\fR option, creating multiple nested directories leads to only the
+deepest directory having the correct owner and group. All newly created parent
+directories will be owned by the root user.
 .SH AUTHOR
 Written by Alpin H. Gencer <ah@gencer.us>.
 .SH COPYRIGHT
