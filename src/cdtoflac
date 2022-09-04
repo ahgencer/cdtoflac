@@ -30,14 +30,6 @@ readonly D_PARALLEL=5          # Maximum number of parallel encodes
 # Functions
 ###################
 
-# dependencies()
-# Prints a newline-separated list of command dependencies of this script.
-dependencies() {
-  cat <<EOF
-cdparanoia
-flac
-EOF
-
 # is_int(NUM)
 # Returns true if NUM is an integer
 is_int() {
@@ -137,12 +129,15 @@ if [ -z ${keep+x} ]; then keep=$D_KEEP; fi
 if [ -z ${parallel+x} ]; then parallel=$D_PARALLEL; fi
 
 # Ensure dependencies are found
-dependencies | while IFS= read -r dependency; do
+while IFS= read -r dependency; do
   if ! command -v "$dependency" >/dev/null 2>&1; then
     echo >&2 "$(me): Dependency $dependency not found in \$PATH"
     exit 2
   fi
-done
+done <<EOF
+cdparanoia
+flac
+EOF
 
 # Validate program arguments
 if ! is_int "$parallel"; then
