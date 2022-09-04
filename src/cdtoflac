@@ -158,6 +158,10 @@ dependencies | while IFS= read -r dependency; do
 done
 
 # Validate program arguments
+if [ ! -e "$device" ]; then
+  die 1 "Device '$device' not found"
+fi
+
 if ! is_int "$parallel"; then
   die 1 "Argument of -p or --parallel option must be an integer. '$parallel' given"
 fi
