@@ -11,7 +11,7 @@
 - Releases: https://github.com/ahgencer/cdtoflac/tags
 - Issues: https://github.com/ahgencer/cdtoflac/issues
 
-*cdtoflac provides a POSIX shell script frontend to cdparanoia for losslessly ripping and encoding music CDs as FLACs.*
+*cdtoflac provides a POSIX shell script for ripping music CDs using cdparanoia and losslessly encoding them as FLACs.*
 
 *cdtoflac* is a small wrapper utility around `cdparanoia` and `flac` for digitizing your CD collection. It handles:
 

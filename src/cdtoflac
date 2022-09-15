@@ -95,7 +95,7 @@ EOF
 # version()
 # Prints the current program version to stdout.
 version() {
-  echo "$(me) v1.0.0"
+  echo "$(me) v1.0.1-dev"
 }
 
 ###################
